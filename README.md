@@ -1,5 +1,7 @@
 # RecallRadar Canada
 
+![RecallRadar Canada project thumbnail](docs/thumbnail.png)
+
 A searchable, source-linked explorer of Canadian recall and safety-alert notices across food, vehicles, medical devices, health products, and consumer products.
 
 **Live demo:** https://hazimali07.github.io/recallradar-canada/  
