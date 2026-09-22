@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore Canadian product recall notices across sectors using public Government of Canada data.">
+  <title>RecallRadar Canada · Public recall intelligence</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell nav">
+      <a class="brand" href="./" aria-label="RecallRadar Canada home"><span class="brand-mark">R<span></span></span><span>RecallRadar <em>Canada</em></span></a>
+      <div class="nav-right"><span class="live-dot"></span> Public data explorer <a href="https://github.com/HazimAli07/recallradar-canada" target="_blank" rel="noopener noreferrer">View code ↗</a></div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div>
+          <div class="eyebrow">CROSS-SECTOR RECALL INTELLIGENCE</div>
+          <h1>See the signal.<br><span>Trace the source.</span></h1>
+          <p>Explore Canadian recall notices across food, vehicles, health, and consumer products. Search products, inspect patterns, and open every original notice.</p>
+          <div class="search-wrap">
+            <label class="sr-only" for="search">Search recalls</label>
+            <span aria-hidden="true">⌕</span>
+            <input id="search" type="search" placeholder="Search a product, issue, or company name" autocomplete="off">
+            <span class="search-hint">/</span>
+          </div>
+          <div class="hero-note">Updated notices are shown by their <strong>last-updated date</strong>, not when a problem first began.</div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div>
+          <div class="radar-line"></div>
+          <div class="center-dot"></div><div class="blip blip-one"></div><div class="blip blip-two"></div><div class="blip blip-three"></div>
+          <div class="art-label art-label-top">OFFICIAL SOURCE</div><div class="art-label art-label-bottom">FOOD · VEHICLES · HEALTH · MORE</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell dashboard" aria-label="Recall explorer">
+      <div class="snapshot-line"><span id="snapshot-status">Loading official data…</span><span id="coverage"></span></div>
+      <div class="kpis" id="kpis"></div>
+
+      <div class="section-heading"><div><span class="section-kicker">01 / EXPLORE</span><h2>Find a notice</h2></div><p>Filter the source records, then inspect the original.</p></div>
+      <div class="filters" role="group" aria-label="Filter notices">
+        <div class="sector-filters" id="sector-filters"></div>
+        <label class="date-filter">Updated <select id="period"><option value="30">Past 30 days</option><option value="90">Past 90 days</option><option value="365">Past year</option><option value="all" selected>All in snapshot</option></select></label>
+      </div>
+
+      <div class="explorer-grid">
+        <section class="panel list-panel" aria-labelledby="results-title">
+          <div class="panel-head"><div><h3 id="results-title">Matching notices</h3><p id="results-caption">Search and filter the records.</p></div><span class="count-pill" id="result-count">—</span></div>
+          <div id="results" class="results" aria-live="polite"></div>
+          <button id="load-more" class="load-more" type="button" hidden>Show more notices ↓</button>
+        </section>
+        <aside class="panel detail-panel" aria-labelledby="detail-title">
+          <div class="panel-head"><div><span class="section-kicker">SOURCE INSPECTION</span><h3 id="detail-title">Notice details</h3></div></div>
+          <div id="detail"><div class="empty-detail"><div class="empty-icon">↗</div><p>Select a notice to see its source fields and related records.</p></div></div>
+        </aside>
+      </div>
+
+      <div class="section-heading section-heading-two"><div><span class="section-kicker">02 / PATTERNS</span><h2>What is changing?</h2></div><p>Counts describe notices in this dataset, not harm or product risk.</p></div>
+      <div class="charts-grid">
+        <section class="panel chart-panel" aria-labelledby="trend-title"><div class="panel-head"><div><h3 id="trend-title">Updates by month</h3><p>Last 12 complete months · selected sector</p></div></div><div id="trend" class="chart"></div></section>
+        <section class="panel chart-panel" aria-labelledby="issues-title"><div class="panel-head"><div><h3 id="issues-title">Most common issue labels</h3><p>Current search and filters · source wording</p></div></div><div id="issues" class="issues-chart"></div></section>
+      </div>
+
+      <div class="method-strip"><div><span class="section-kicker">HOW IT WORKS</span><h3>Evidence before interpretation.</h3></div><p>The feed is refreshed by an automated pipeline. Related notices use TF-IDF text similarity within each sector. Similarity can surface useful matches but is not a safety assessment. Missing dates are excluded from this time-based explorer. Always use the official notice for action.</p></div>
+    </section>
+  </main>
+  <footer><div class="shell footer-grid"><div><strong>RecallRadar Canada</strong><p>Built by Hazim Ali as a public-data portfolio project. This is an independent explorer, not a Government of Canada service.</p></div><div><a href="https://open.canada.ca/data/en/dataset/d38de914-c94c-429b-8ab1-8776c31643e3" target="_blank" rel="noopener noreferrer">Government dataset ↗</a><a href="https://open.canada.ca/en/open-government-licence-canada" target="_blank" rel="noopener noreferrer">Open Government Licence ↗</a><a href="https://github.com/HazimAli07/recallradar-canada" target="_blank" rel="noopener noreferrer">Methods and code ↗</a></div></div></footer>
+  <script src="./app.js" defer></script>
+</body>
+</html>
