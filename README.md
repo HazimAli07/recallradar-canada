@@ -25,7 +25,7 @@ The app supports product, issue, category, and organization search; sector and d
 | Refresh | Scheduled GitHub Actions workflow rebuilds the snapshot and runs data checks. |
 | Databricks | Companion PySpark notebook reproduces the cleaning and sector/issue analysis. |
 
-The first verified snapshot (September 22, 2026) checked **34,103** source records and included **5,848** dated notices from the approximate prior 36 months. **2,717** source records had no valid last-updated date and were excluded from the time-based explorer. Counts will change with source updates.
+The September 23, 2026 snapshot checked **34,107** source records and included **5,852** dated notices from the approximate prior 36 months. **2,717** source records had no valid last-updated date and were excluded from the time-based explorer. Counts will change with source updates; the live explorer shows its own snapshot date.
 
 ## Run locally
 
