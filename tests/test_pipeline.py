@@ -8,12 +8,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "pipeline"))
 from build_data import build, normalize  # noqa: E402
 
 
-def raw(nid, updated="2026-09-20", organization="CFIA", title="Sample food recall"):
+def raw(nid, updated="2026-09-20", organization="CFIA", title="Sample food recall", category="Food"):
     return {
         "NID": str(nid), "Title": title,
         "URL": f"https://recalls-rappels.canada.ca/en/alert-recall/{nid}",
         "Organization": organization, "Product": "Sample product", "Issue": "Allergen",
-        "Category": "Food", "Recall class": "Class 1", "Last updated": updated,
+        "Category": category, "Recall class": "Class 1", "Last updated": updated,
         "Archived": "0",
     }
 
@@ -31,6 +31,12 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(snapshot["metadata"]["duplicate_ids"], 1)
         self.assertEqual(snapshot["metadata"]["records_without_valid_date"], 1)
         self.assertEqual([row["id"] for row in snapshot["records"]], ["1"])
+
+    def test_cross_sector_publisher_uses_only_clear_categories(self):
+        publisher = "Communications and Public Affairs Branch"
+        self.assertEqual(normalize(raw(10, organization=publisher, category="Medical devices"))["sector"], "Medical devices")
+        self.assertEqual(normalize(raw(11, organization=publisher, category="Drugs"))["sector"], "Health products")
+        self.assertEqual(normalize(raw(12, organization=publisher, category="Drugs - Medical devices"))["sector"], "Other")
 
     def test_snapshot_has_unique_official_records_and_valid_dates(self):
         path = Path(__file__).resolve().parents[1] / "docs" / "data.json"

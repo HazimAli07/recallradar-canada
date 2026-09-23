@@ -148,7 +148,8 @@ function renderTrend() {
   sectorRows().forEach((row) => { const key = row.updated.slice(0, 7); if (counts.has(key)) counts.set(key, counts.get(key) + 1); });
   const values = [...counts.values()];
   const max = Math.max(1, ...values);
-  const chart = svg("svg", { viewBox: "0 0 560 220", role: "img", "aria-label": `Monthly notices updated over 12 complete months; maximum ${max}` });
+  const monthValues = months.map((month, i) => `${month}: ${number.format(values[i])}`).join("; ");
+  const chart = svg("svg", { viewBox: "0 0 560 220", role: "img", "aria-label": `Monthly notices updated over 12 complete months. ${monthValues}` });
   const x = (i) => 32 + i * 45;
   const y = (v) => 178 - (v / max) * 147;
   for (let i = 0; i <= 3; i++) {

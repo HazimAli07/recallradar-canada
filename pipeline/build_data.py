@@ -14,6 +14,7 @@ import json
 import math
 from pathlib import Path
 import re
+from time import time_ns
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
@@ -22,6 +23,20 @@ SOURCE = "https://recalls-rappels.canada.ca/sites/default/files/opendata-donnees
 SOURCE_PAGE = "https://open.canada.ca/data/en/dataset/d38de914-c94c-429b-8ab1-8776c31643e3"
 STOPWORDS = frozenset("a an and are as at be by canada due for from in is it of on or recall recalled recalls safety the to with product products issue alert notice transport".split())
 TOKEN_RE = re.compile(r"[a-z0-9][a-z0-9'-]{2,}")
+PUBLIC_AFFAIRS_CATEGORY_SECTORS = {
+    "Food": "Food",
+    "Medical devices": "Medical devices",
+    "Radiology": "Medical devices",
+    "Drugs": "Health products",
+    "Health products": "Health products",
+    "Natural health products": "Health products",
+    "Biologic or vaccine": "Health products",
+    "Radiopharmaceuticals": "Health products",
+    "Drugs - Natural health products": "Health products",
+    "Beauty and personal care - Specialized products": "Consumer products",
+    "Arts, crafts and needlework - Toys and games": "Consumer products",
+    "Appliances - Outdoor living - Specialized products": "Consumer products",
+}
 
 
 def clean(value: object) -> str:
@@ -31,8 +46,8 @@ def clean(value: object) -> str:
     return " ".join(value.split())
 
 
-def sector(organization: str) -> str:
-    return {
+def sector(organization: str, category: str) -> str:
+    by_organization = {
         "TC": "Vehicles",
         "CFIA": "Food",
         "Medical devices": "Medical devices",
@@ -40,7 +55,13 @@ def sector(organization: str) -> str:
         "Drugs and health products": "Health products",
         "Marketed health products": "Health products",
         "Controlled substances and cannabis": "Cannabis",
-    }.get(organization, "Other")
+    }
+    if organization in by_organization:
+        return by_organization[organization]
+    # This publishing unit spans sectors. Mixed or unknown categories stay Other.
+    if organization == "Communications and Public Affairs Branch":
+        return PUBLIC_AFFAIRS_CATEGORY_SECTORS.get(category, "Other")
+    return "Other"
 
 
 def normalize(row: dict) -> dict | None:
@@ -55,15 +76,16 @@ def normalize(row: dict) -> dict | None:
     except ValueError:
         updated = ""
     organization = clean(row.get("Organization"))
+    category = clean(row.get("Category"))
     return {
         "id": nid,
         "title": clean(row.get("Title")),
         "url": url,
         "organization": organization,
-        "sector": sector(organization),
+        "sector": sector(organization, category),
         "product": clean(row.get("Product")),
         "issue": clean(row.get("Issue")),
-        "category": clean(row.get("Category")),
+        "category": category,
         "recall_class": clean(row.get("Recall class")),
         "updated": updated,
         "archived": clean(row.get("Archived")) == "1",
@@ -138,12 +160,21 @@ def main() -> None:
     if args.input:
         raw = json.loads(args.input.read_text(encoding="utf-8"))
     else:
-        with urlopen(SOURCE, timeout=60) as response:
+        # The publisher's CDN can briefly serve an older cached copy at the bare URL.
+        with urlopen(f"{SOURCE}?cb={time_ns()}", timeout=60) as response:
             raw = json.load(response)
     if not isinstance(raw, list):
         raise ValueError("Expected a list of source notices")
     snapshot = build(raw, args.as_of)
     args.output.parent.mkdir(parents=True, exist_ok=True)
+    if args.output.exists():
+        existing = json.loads(args.output.read_text(encoding="utf-8"))
+        current_metadata = {key: value for key, value in snapshot["metadata"].items() if key != "generated_at_utc"}
+        existing_metadata = {key: value for key, value in existing.get("metadata", {}).items() if key != "generated_at_utc"}
+        if current_metadata == existing_metadata and snapshot["records"] == existing.get("records"):
+            print("Snapshot unchanged; keeping its original generation time.")
+            print(json.dumps(existing["metadata"], indent=2))
+            return
     args.output.write_text(json.dumps(snapshot, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(json.dumps(snapshot["metadata"], indent=2))
 

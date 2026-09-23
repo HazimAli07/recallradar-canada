@@ -18,7 +18,7 @@ The app supports product, issue, category, and organization search; sector and d
 
 | Layer | Work |
 | --- | --- |
-| Ingestion | Download the English JSON feed from the official recalls site. |
+| Ingestion | Download the English JSON feed from the official recalls site with a unique request parameter to avoid a stale CDN response. |
 | Quality | Validate official-source URLs and IDs, de-duplicate by notice ID, clean text, validate dates, and report exclusions. |
 | Analysis | Map publisher units to broad sectors, count source *last-updated* notices, and compute TF-IDF cosine neighbours within each sector. |
 | Interface | Dependency-free static app with search, filters, source inspection, trends, and responsive layout. |
@@ -47,7 +47,8 @@ Open http://localhost:8765/. To rebuild from a downloaded copy of the source, pa
 - **Archived:** The publisher's source flag, displayed as supplied. It does not mean a product is safe or a problem is resolved.
 - **Recall class:** Source text is displayed without equating class systems across product sectors. Missing labels remain missing.
 - **Related notices:** TF-IDF cosine similarity uses title, product, issue, and category text, within the mapped sector. These matches are for exploration only; they are not causal links, duplicate determinations, or safety assessments.
-- **Sector:** A broad grouping derived from the source organization. Notices under ambiguous organizations remain `Other`.
+- **Sector:** A broad grouping derived from the source organization. The cross-sector Communications and Public Affairs Branch uses its category where that category clearly identifies one sector; mixed and unknown categories remain `Other`.
+- **Databricks date:** The notebook defaults to the current UTC date. Set its `as_of_utc` widget to the site's snapshot date when comparing exact time windows.
 - **Guidance:** The app points to each full official notice. It does not generate safety instructions.
 
 The Government of Canada feed is updated daily, but a scheduled refresh is a repository workflow, not a guarantee that the source or deployed page has updated. The interface always displays its snapshot date.
